@@ -1,0 +1,72 @@
+#---------------------------------------------------------------DEPLOYMENT---------------------------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hunter
+  namespace: hunter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hunter-app
+  template:
+    metadata:
+      labels:
+        app: hunter-app
+    spec:
+      containers:
+      - name: hunter-cont
+        image: ghcr.io/saisairepo/hunter:v1.0
+        ports:
+        - containerPort: 3004
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+          limits:
+            memory: "4Gi"
+            cpu: "2"
+      imagePullSecrets:
+      - name: hunter-secret
+#------------------------------------------------------------------SERVICE---------------------------------------------------------------------------------------------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hunter-service
+  namespace: hunter
+spec:
+  selector:
+    app: hunter-app
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3004
+  type: ClusterIP
+#-------------------------------------------------------------------INGRESS--------------------------------------------------------------------------------------------
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hunter-ingress
+  namespace: hunter
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - hunter.mlhuillier.com
+      secretName: com-tls
+  rules:
+    - host: hunter.mlhuillier.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hunter-service
+                port:
+                  number: 80
