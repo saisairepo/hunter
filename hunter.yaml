@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: hunter-cont
-        image: ghcr.io/saisairepo/hunter:v1.0
+        image: ghcr.io/saisairepo/hunter:v1.1
         ports:
         - containerPort: 3004
         resources:
