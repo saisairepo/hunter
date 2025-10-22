@@ -8,9 +8,10 @@ WORKDIR /usr/share/nginx/html
 COPY . .
 
 # Step 4: Expose port 9000 (though Nginx defaults to port 80, we'll use 9000 as requested)
-EXPOSE 3004
+EXPOSE 8080
 
 # Step 5: Change Nginx default configuration to listen on port 9000 (optional)
-RUN sed -i 's/80/3004/' /etc/nginx/conf.d/default.conf
+RUN sed -i 's/80/8080/' /etc/nginx/conf.d/default.conf
 
 # Nginx will automatically serve the files from /usr/share/nginx/html directory
+
